@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Mood Booster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        html, body {
+            height: 100%;
+        }
+        body {
+            background-color: #050c2a;
+            overflow: hidden;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 50px 20px;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            gap: 3rem;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .text-left {
+            flex: 1;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .camera-box {
+            flex: 1;
+            background-color: rgba(26, 33, 75, 0.7);
+            border-radius: 50px;
+            padding: 20px;
+            box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 0.5px solid #5fa2ff;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 30px;
+            transform: scaleX(-1); /* mirror effect */
+        }
+
+        .detect-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: #102d84;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .detect-btn:hover {
+            background-color: #1f3fc9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 2rem;
+            color: white;
+            text-decoration: none;
+            z-index: 2;
+        }
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #5fa2ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        
+            .text-left {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+        
+            .camera-box {
+                width: 100%;
+                max-width: 400px;
+                border-radius: 20px;
+            }
+        
+            .detect-btn {
+                width: 100%;
+                font-size: 1rem;
+            }
+        
+            video {
+                width: 100%;
+                border-radius: 20px;
+            }
+        
+            .back-btn {
+                top: 20px;
+                left: 20px;
+                font-size: 1.5rem;
+            }
+        
+            #result {
+                font-size: 1rem;
+            }
+        }
+        
+    
+        @media (max-width: 480px) {
+            .text-left {
+                font-size: 1.8rem;
+            }
+    
+            .camera-box {
+                padding: 15px;
+            }
+    
+            video {
+                border-radius: 20px;
+            }
+    
+            .detect-btn {
+                padding: 10px 20px;
+            }
+    
+            .loader {
+                width: 30px;
+                height: 30px;
+                border-width: 4px;
+            }
+    
+            #result {
+                font-size: 1rem;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <div class="text-left">
+            <div>AI MOOD</div>
+            <div>BOOSTER WITH</div>
+            <div>MUSIC PLAYER</div>
+        </div>
+        <div class="camera-box">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <button id="detect-btn" class="detect-btn">Deteksi Sekarang</button>
+        
+            <div id="loading" style="display: none; margin-top: 20px;">
+                <div class="loader"></div>
+                <p style="margin-top: 10px; color: #ccc;">Menganalisis mood...</p>
+            </div>
+            <p id="result" style="margin-top: 20px; font-size: 1.2rem; color: #5fa2ff;"></p>
+            
+            <p id="result" style="margin-top: 20px; font-size: 1.2rem; color: #5fa2ff;"></p>
+        </div>
+        
+        <script>
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const resultText = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const button = document.getElementById('detect-btn');
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Tidak bisa akses kamera:", err);
+                    alert("Tidak bisa akses kamera. Berikan izin terlebih dahulu.");
+                });
+            
+            button.addEventListener("click", async () => {
+                // Step 1: Tampilkan loader
+                loadingDiv.style.display = "block";
+                resultText.textContent = "";
+            
+                // Step 2: Ambil gambar dari webcam
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+            
+                // Step 3: Convert ke blob dan kirim ke server
+                canvas.toBlob(async (blob) => {
+                    const formData = new FormData();
+                    formData.append("image", blob, "capture.jpg");
+            
+                    try {
+                        const response = await fetch("/detect", {
+                            method: "POST",
+                            body: formData
+                        });
+            
+                        const data = await response.json();
+                        loadingDiv.style.display = "none";
+            
+                        if (data.redirect) {
+                            // ✅ Simulasikan klik pada <a target="_blank"> agar new tab dibuka tanpa pop-up blocker
+                            const a = document.createElement("a");
+                            a.href = data.redirect;
+                            a.target = "_blank";
+                            a.rel = "noopener noreferrer";
+                            a.click();
+                        }
+            
+                    } catch (error) {
+                        loadingDiv.style.display = "none";
+                        resultText.textContent = "Terjadi kesalahan saat mengirim gambar.";
+                        console.error(error);
+                    }
+                }, "image/jpeg");
+            });
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 50,
+                        density: {
+                            enable: true,
+                            value_area: 650
+                        }
+                    },
+                    shape: {
+                        type: "circle",
+                        stroke: {
+                            width: 0,
+                            color: "#fff"
+                        }
+                    },
+                    opacity: {
+                        value: 0.9,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 1,
+                            opacity_min: 0.5,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 8,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 4,
+                            size_min: 0.3,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.5,
+                        width: 1
+                    },
+                    color: {
+                        value: ["#01198c"]
+                    },
+                    move: {
+                        enable: true,
+                        speed: 3.5,
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "repulse"
+                        },
+                        onclick: {
+                            enable: false
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        repulse: {
+                            distance: 100,
+                            duration: 0.4
+                        }
+                    }
+                }
+            });
+                
+        </script> 
+</body>
+</html>

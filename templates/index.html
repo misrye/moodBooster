@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Mood Booster with Music</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script> <!-- Particles.js Library -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        html, body {
+            height: 100%;
+            position: relative;
+        }
+        body {
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            background-color: #050c2a;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Particles.js container */
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            z-index: 2;
+        }
+        h1 span {
+            color: #5fa2ff;
+        }
+        h3 {
+            margin-bottom: 50px;
+        }
+        .cards {
+            display: flex;
+            gap: 80px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 2;
+        }
+        .card {
+            background-color: rgba(0, 8, 66, 0.3);
+            padding: 40px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            backdrop-filter: blur(10px);
+            border: 0.5px solid #5fa2ff;
+            cursor: pointer;
+            color: white;
+        }
+    
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+    
+        .card:focus {
+            outline: 2px solid #5fa2ff;
+        }
+
+        .icon-container {
+            background: radial-gradient(circle, #ffffff 0%, #ffffff 100%);
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-container img {
+            width: 50px;
+            
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .card p {
+            font-size: 0.9rem;
+            color: #d3d3d3;
+        }
+    </style>
+</head>
+<body>
+    <h1><span>AI</span> MOOD BOOSTER</h1>
+    <h3>WITH MUSIC PLAYER</h3>
+    <div class="cards">
+        <button class="card" onclick="window.open('/moodDetection', '_blank')">
+            <div class="icon-container">
+                <img src="{{ url_for('static', filename='img/gambar_mood_detection.png') }}" alt="icon" />
+            </div>
+            <h2>Mood Detection</h2>
+            <p>Detects your facial expressions in real-time to play music that matches your current mood. Your detected mood is displayed with interactive text and emoticons for a more engaging experience.</p>
+        </button>
+        <button class="card" onclick="window.open('/chatbot', '_blank')">
+            <div class="icon-container">
+                <img src="{{ url_for('static', filename='img/gambar_chatbot.png') }}" alt="icon" />
+            </div>
+            <h2>Chatbot AI</h2>
+            <p>Chat with an intelligent AI chatbot to explore music-related topics, get song recommendations, or receive mood-boosting tips—perfect for managing stress and academic fatigue.</p>
+        </button>
+    </div>
+
+    <!-- Particles.js -->
+    <div id="particles-js"></div>
+
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 50,
+                    density: {
+                        enable: true,
+                        value_area: 650
+                    }
+                },
+                shape: {
+                    type: "circle",
+                    stroke: {
+                        width: 0,
+                        color: "#fff"
+                    }
+                },
+                opacity: {
+                    value: 0.9,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.5,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 8,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 4,
+                        size_min: 0.3,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ffffff",
+                    opacity: 0.5,
+                    width: 1
+                },
+                color: {
+                    value: ["#01198c"]
+                },
+                move: {
+                    enable: true,
+                    speed: 3.5,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: "repulse"
+                    },
+                    onclick: {
+                        enable: false
+                    },
+                    resize: true
+                },
+                modes: {
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    }
+                }
+            }
+        });
+        
+    </script>
+</body>
+</html>
